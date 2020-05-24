@@ -3,18 +3,18 @@ import numpy as np
 from pathlib import Path
 import heapq
 from abbrev_utility import *
+import time
+
 
 path = input("Enter text path : ")
 
 with open(path, 'r') as file:
 	inputText = file.read()
 
-# sample = sample.lower()
-
 print(inputText)
 
 entropy = calculate_entropy(inputText)
-
+start = time.time()
 # Apply abbriviation Encoding
 abbriv_encode(inputText)
 
@@ -65,8 +65,13 @@ outputFile.close()
 with open('encodingDictionaryHuffman', 'w+') as file:
 	file.write(str(encodingDictionary))
 
+end = time.time()
+encodingTime = end - start
+
 # =============================================================================
 # Decode sample
+
+start = time.time()
 
 # Read the input file
 with open('encoded', 'r+') as file:
@@ -94,7 +99,6 @@ with open('encodingDic','r+') as file:
     encodingDic = eval(encodingDic)
     file.close()
 
-print(type(encodingDic))
 decoded = abbriv_decode(sample,encodingDic)
 
 if inputText == decoded:
@@ -106,6 +110,9 @@ outputFile = open('Abbrivdecoded.txt', 'w')
 outputFile.write(decoded)
 outputFile.close()
 
+end = time.time()
+decodingTime = end - start
+
 size1 = Path(path).stat().st_size
 size2 = Path('encoded').stat().st_size
 size3 = Path('encodingDic').stat().st_size
@@ -113,10 +120,8 @@ size4 = Path('encodingDictionaryHuffman').stat().st_size
 
 print("compression ratio: ", size1/(size2+size3+size4))
 
-# size5 = Path('D:/Multimedia/huffman/encoded').stat().st_size
-# size6 = Path('D:/Multimedia/huffman/encodingDictionary').stat().st_size
-
-# print("compression ratio Huffman: ", size1/(size5+size6))
-
-print("entropy: ",entropy)
+print("entropy: ", entropy)
 print("compression ratio entropy: ", 8/entropy)
+
+print("Encoding Time: ", encodingTime)
+print("Decoding Time: ", decodingTime)

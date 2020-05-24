@@ -140,7 +140,6 @@ def decode_sample(sample, sampleCode):
 def abbriv_encode(sample):
 	#Split Sample to individual words
 	sample = sample.split(" ") 
-	# print(sample)
 
 	encodedSample = ""
 	encodingDic = {}
@@ -161,12 +160,14 @@ def abbriv_encode(sample):
 			if encodingDic[key].find(sample[i]) == 0:
 				match = True
 				n = i
-				for word in encodingDic[key].split(" "):
+				dic = encodingDic[key].split(" ")
+				for word in dic:
 					if word != sample[n]:
 						match = False
 					n += 1
 					if n >= len(sample):
-						match = False
+						if word != dic[len(dic)-1]:
+							match = False
 						break
 				if match == True:
 					skip = True
@@ -181,7 +182,11 @@ def abbriv_encode(sample):
 					found = True
 					code = sample[i][0].upper()
 					count = 1
+					# print("i: ",i+count)
+					# print("j: ",j)
 					while (i+count < j and j+count < len(sample)):
+						# print("i': ",i+count)
+						# print("j': ",j+count)
 						if sample[j+count] != sample[i+count]:
 							break
 						code += sample[i+count][0].upper()
@@ -215,7 +220,7 @@ def abbriv_encode(sample):
 			if found == False:
 				encodedSample += sample[i] + " "
 				i+=1
-			j = i+1
+		j = i+1
 	print("\n")
 	print(encodingDic)
 	print("\n")
@@ -242,6 +247,7 @@ def abbriv_decode(sample,encodingDic):
 			decodedSample += sample[i] + " "
 		i += 1
 	return decodedSample.strip()
+
 
 def calculate_entropy(inputText):
 	frequency = [0.0] * 0xFF
