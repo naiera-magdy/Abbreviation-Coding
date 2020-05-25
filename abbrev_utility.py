@@ -137,8 +137,14 @@ def decode_sample(sample, sampleCode):
 
 	return decodedSample
 
+#
+# Encode Given sample and save the encoded in file and its dictionary in file
+# 
+# Arguments:
+# 	sample {string} -- A string to be encoded
+#
 def abbriv_encode(sample):
-	#Split Sample to individual words
+	# Split Sample to individual words
 	sample = sample.split(" ") 
 
 	encodedSample = ""
@@ -149,12 +155,14 @@ def abbriv_encode(sample):
 
 	while i < len(sample):
 
+		# Check if this word is a single character
 		if len(sample[i]) == 1:
 			encodedSample += sample[i] + " "
 			i+=1
 			j = i+1
 			continue
-
+		
+		# Check if this word or its statement is already stored in the dictionary
 		skip = False
 		for key in encodingDic:
 			if encodingDic[key].find(sample[i]) == 0:
@@ -175,6 +183,7 @@ def abbriv_encode(sample):
 					encodedSample += key + " "
 					break
 
+		# Search for matching words or statements
 		if skip == False:    
 			found = False   
 			while j < len(sample):
@@ -182,11 +191,7 @@ def abbriv_encode(sample):
 					found = True
 					code = sample[i][0].upper()
 					count = 1
-					# print("i: ",i+count)
-					# print("j: ",j)
 					while (i+count < j and j+count < len(sample)):
-						# print("i': ",i+count)
-						# print("j': ",j+count)
 						if sample[j+count] != sample[i+count]:
 							break
 						code += sample[i+count][0].upper()
@@ -195,6 +200,8 @@ def abbriv_encode(sample):
 					k = 1
 					putasit = False
 					same = True
+
+					# Make sure that this code is unique. If not so, make it unique
 					while k < len(sample[i+count-1]) and same == True:
 						same = False
 						for key in encodingDic:
@@ -211,27 +218,34 @@ def abbriv_encode(sample):
 						encodingDic[code] = " ".join(sample[i : i+count])
 						encodedSample += code + " "
 					else:
+						# If can't make it unique so put it as it is 
 						encodedSample += " ".join(sample[i : i+count]) + " "
 					i += count 
 					break
 				else:
 					j += 1
-				
+			# If this word isn't repeated put it as it is
 			if found == False:
 				encodedSample += sample[i] + " "
 				i+=1
 		j = i+1
-	print("\n")
-	print(encodingDic)
-	print("\n")
-	print(encodedSample)
-	print("\n")
+
+	# Save Encoded text and the dictionary in files
 	with open('abbrevEncoded.txt', 'w+') as file:
 		file.write(encodedSample)
 	with open('encodingDic', 'w+') as file:
 		file.write(str(encodingDic))
 		
-
+#
+# Decode a given sample to its original form
+# 
+# Arguments:
+# 	sample		{string} -- A string to be decoded
+# 	encodingDic {dict}	 -- dictionary of codes
+# 
+# Returns:
+# 	string -- the decoded string
+#
 def abbriv_decode(sample,encodingDic):
 	sample = sample.split(" ")
 	i = 0
@@ -248,7 +262,15 @@ def abbriv_decode(sample,encodingDic):
 		i += 1
 	return decodedSample.strip()
 
-
+#
+# Calculate the entropy of a given text
+# 
+# Arguments:
+# 	inputText {string} -- A string to calculate its entropy
+# 
+# Returns:
+# 	float -- The entropy
+#
 def calculate_entropy(inputText):
 	frequency = [0.0] * 0xFF
 	for symbol in inputText:

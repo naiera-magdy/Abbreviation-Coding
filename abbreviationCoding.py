@@ -1,3 +1,14 @@
+# 
+# Before running this code you have to ensure that these packages are installed on your device
+# 	python
+# 	bitstring
+# 	heapq
+# 	opencv
+# 	numpy
+# 	math
+#	pathlib
+# 	time
+# 
 from cv2 import cv2
 import numpy as np
 from pathlib import Path
@@ -5,20 +16,30 @@ import heapq
 from abbrev_utility import *
 import time
 
+###########################
+### Read the input file ###
+###########################
 
 path = input("Enter text path : ")
 
 with open(path, 'r') as file:
 	inputText = file.read()
 
-print(inputText)
-
+# Calculate Entropy
 entropy = calculate_entropy(inputText)
+
+###################################
+### Apply Abbriviation Encoding ###
+###################################
+
 start = time.time()
-# Apply abbriviation Encoding
 abbriv_encode(inputText)
 
-# Read the input file
+##############################
+### Apply Huffman Encoding ###
+##############################
+
+# Read Abbreviation Encoded file
 with open('abbrevEncoded.txt', 'r') as file:
 	sample = file.read()
 	# Append a null terminator
@@ -65,15 +86,19 @@ outputFile.close()
 with open('encodingDictionaryHuffman', 'w+') as file:
 	file.write(str(encodingDictionary))
 
+# Calculate Encoding time
 end = time.time()
 encodingTime = end - start
 
 # =============================================================================
-# Decode sample
+
+###########################
+### Decoding the Sample ###
+###########################
 
 start = time.time()
 
-# Read the input file
+# Read the encoded file
 with open('encoded', 'r+') as file:
 	sample = bitstring.Bits(file)
 
@@ -82,6 +107,10 @@ with open('encodingDictionaryHuffman', 'r+') as file:
 	encodingDictionary = file.read()
 	encodingDictionary = eval(encodingDictionary)
 
+##############################
+### Apply Huffman Decoding ###
+##############################
+
 decodedSample = decode_sample(sample, encodingDictionary)
 
 # Output the decoded sample into a file
@@ -89,6 +118,10 @@ decodedSample = bytearray(decodedSample, 'utf-8')
 outputFile = open('decodedHuffman', 'w+b')
 outputFile.write(decodedSample)
 outputFile.close()
+
+###################################
+### Apply Abbreviation Decoding ###
+###################################
 
 with open('decodedHuffman','r+') as file:
     sample = file.read()
@@ -99,7 +132,9 @@ with open('encodingDic','r+') as file:
     encodingDic = eval(encodingDic)
     file.close()
 
+# Decode the sample
 decoded = abbriv_decode(sample,encodingDic)
+
 
 if inputText == decoded:
     print("\nSame")
@@ -110,8 +145,19 @@ outputFile = open('Abbrivdecoded.txt', 'w')
 outputFile.write(decoded)
 outputFile.close()
 
+###############################
+### Calculate Decoding Time ###
+###############################
+
 end = time.time()
 decodingTime = end - start
+
+print("Encoding Time: ", encodingTime)
+print("Decoding Time: ", decodingTime)
+
+###################################
+### Calculate Compression Ratio ###
+###################################
 
 size1 = Path(path).stat().st_size
 size2 = Path('encoded').stat().st_size
@@ -122,6 +168,3 @@ print("compression ratio: ", size1/(size2+size3+size4))
 
 print("entropy: ", entropy)
 print("compression ratio entropy: ", 8/entropy)
-
-print("Encoding Time: ", encodingTime)
-print("Decoding Time: ", decodingTime)
